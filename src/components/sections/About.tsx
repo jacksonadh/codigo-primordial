@@ -6,6 +6,7 @@ const techStack = [
   { name: 'TypeScript', color: 'text-blue-400' },
   { name: 'Next.js', color: 'text-white' },
   { name: 'VTEX IO', color: 'text-pink-400' },
+  { name: 'Nuvemshop', color: 'text-purple-400' },
   { name: 'Node.js', color: 'text-green-400' },
   { name: 'GraphQL', color: 'text-pink-500' },
   { name: 'Tailwind CSS', color: 'text-teal-400' },

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Menu, X } from 'lucide-react'
 import { Button } from './Button'
+import { BrandLogo } from '../brand/BrandLogo'
 
 const navLinks = [
   { href: '#home', label: 'Início' },
@@ -29,19 +30,18 @@ export function Navbar() {
         fixed top-0 left-0 right-0 z-50 transition-all duration-300
         ${isScrolled 
           ? 'bg-surface/95 backdrop-blur-md border-b border-surface-light shadow-lg' 
-          : 'bg-transparent'
+          : 'bg-background/80 backdrop-blur-sm'
         }
       `}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
-          <a href="#home" className="flex items-center gap-2 group">
-            <span className="text-primary font-mono text-2xl font-bold group-hover:text-glow transition-all">
-              &lt;/&gt;
-            </span>
-            <span className="text-text font-semibold text-lg hidden sm:block">
-              Código <span className="text-primary">Primordial</span>
-            </span>
+          <a href="#home" aria-label="Ir para o início" className="flex items-center group">
+            <BrandLogo
+              variant="full"
+              loading="eager"
+              className="h-10 w-10 sm:h-12 sm:w-12 transition-opacity duration-200 group-hover:opacity-80"
+            />
           </a>
 
           <div className="hidden md:flex items-center gap-1">
@@ -49,7 +49,7 @@ export function Navbar() {
               <a
                 key={link.href}
                 href={link.href}
-                className="px-4 py-2 text-text-muted hover:text-primary transition-colors duration-200 font-medium"
+                className="px-4 py-2 text-text hover:text-primary transition-colors duration-200 font-medium"
               >
                 {link.label}
               </a>
@@ -78,7 +78,7 @@ export function Navbar() {
                 <a
                   key={link.href}
                   href={link.href}
-                  className="block px-4 py-3 text-text-muted hover:text-primary hover:bg-primary/5 transition-colors duration-200 font-medium"
+                  className="block px-4 py-3 text-text hover:text-primary hover:bg-primary/5 transition-colors duration-200 font-medium"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {link.label}

@@ -20,8 +20,8 @@ const services = [
   },
   {
     icon: ShoppingCart,
-    title: 'Lojas VTEX IO e E-commerce',
-    description: 'Checkout que não abandona carrinho. Lojas VTEX ou customizadas com foco em redução de atrito e aumento de ticket médio. Venda mais com menos cliques.',
+    title: 'Lojas Virtuais — VTEX, Nuvemshop e E-commerce',
+    description: 'Checkout que não abandona carrinho. Lojas em VTEX, Nuvemshop ou plataforma customizada com foco em redução de atrito e aumento de ticket médio. Venda mais com menos cliques.',
     benefits: ['Menos abandono', 'Mais conversão', 'Integração com ERP'],
     cta: 'Escalar meu e-commerce',
   },

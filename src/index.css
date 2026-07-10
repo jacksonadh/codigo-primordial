@@ -3,13 +3,25 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --brand-black: #090909;
+    --brand-dark: #151515;
+    --brand-gray: #d9d9d9;
+    --brand-light-gray: #eeeeee;
+    --brand-green: #39ff14;
+    --brand-purple: #6f22c9;
+    --brand-purple-light: #8c3cff;
+    --brand-white: #f5f5f5;
+  }
+
   html {
     scroll-behavior: smooth;
   }
-  
+
   body {
     @apply bg-background text-text antialiased;
     font-family: 'Outfit', sans-serif;
+    background-color: var(--brand-black);
   }
 
   ::selection {
@@ -23,24 +35,107 @@
   }
 
   .text-glow {
-    text-shadow: 0 0 20px rgba(57, 255, 20, 0.5),
-                 0 0 40px rgba(57, 255, 20, 0.3),
-                 0 0 60px rgba(57, 255, 20, 0.2);
+    text-shadow:
+      0 0 20px rgba(57, 255, 20, 0.5),
+      0 0 40px rgba(57, 255, 20, 0.3),
+      0 0 60px rgba(57, 255, 20, 0.2);
   }
 
   .text-glow-secondary {
-    text-shadow: 0 0 20px rgba(139, 92, 246, 0.5),
-                 0 0 40px rgba(139, 92, 246, 0.3);
+    text-shadow:
+      0 0 20px rgba(111, 34, 201, 0.5),
+      0 0 40px rgba(111, 34, 201, 0.3);
   }
 
   .card-glow {
-    box-shadow: 0 0 0 1px rgba(57, 255, 20, 0.1),
-                0 4px 24px rgba(57, 255, 20, 0.05);
+    box-shadow:
+      0 0 0 1px rgba(57, 255, 20, 0.08),
+      0 4px 24px rgba(57, 255, 20, 0.04);
   }
 
   .card-glow:hover {
-    box-shadow: 0 0 0 1px rgba(57, 255, 20, 0.3),
-                0 8px 32px rgba(57, 255, 20, 0.15);
+    box-shadow:
+      0 0 0 1px rgba(57, 255, 20, 0.25),
+      0 8px 32px rgba(57, 255, 20, 0.12);
+  }
+
+  .card-glow-purple {
+    box-shadow:
+      0 0 0 1px rgba(111, 34, 201, 0.08),
+      0 4px 24px rgba(111, 34, 201, 0.04);
+  }
+
+  .card-glow-purple:hover {
+    box-shadow:
+      0 0 0 1px rgba(111, 34, 201, 0.25),
+      0 8px 32px rgba(111, 34, 201, 0.12);
+  }
+
+  /**
+   * Textura de fundo — noise sutil via SVG inline, sem arquivos externos.
+   * Opacidade baixa para não competir com o conteúdo.
+   */
+  .texture-noise {
+    position: relative;
+  }
+
+  .texture-noise::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 200px 200px;
+  }
+
+  /**
+   * Borda com efeito grunge — borda irregular usando clip-path.
+   * Discreto, evita parecer cortado em mobile.
+   */
+  .border-grunge {
+    border: 1px solid transparent;
+    background-clip: padding-box;
+    position: relative;
+  }
+
+  .border-grunge::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(
+      135deg,
+      rgba(57, 255, 20, 0.2) 0%,
+      rgba(111, 34, 201, 0.15) 50%,
+      rgba(57, 255, 20, 0.1) 100%
+    );
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /**
+   * Seção com iluminação central sutil — centro ligeiramente mais visível,
+   * bordas mais escuras, reforçando a hierarquia de conteúdo.
+   */
+  .section-vignette {
+    background-image:
+      radial-gradient(
+        ellipse 70% 60% at 50% 50%,
+        rgba(57, 255, 20, 0.025) 0%,
+        transparent 70%
+      );
+  }
+
+  .section-vignette-purple {
+    background-image:
+      radial-gradient(
+        ellipse 70% 60% at 50% 50%,
+        rgba(111, 34, 201, 0.04) 0%,
+        transparent 70%
+      );
   }
 }
 
@@ -53,19 +148,42 @@
     animation: slideUp 0.6s ease-out forwards;
   }
 
+  .animate-slide-down {
+    animation: slideDown 0.4s ease-out forwards;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-in,
+    .animate-slide-up,
+    .animate-slide-down,
+    .animate-pulse,
+    .animate-bounce {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+
   @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 
   @keyframes slideUp {
     from {
       opacity: 0;
       transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
     }
     to {
       opacity: 1;
