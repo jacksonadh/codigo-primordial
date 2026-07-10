@@ -11,13 +11,13 @@ interface BrandLogoProps {
 
 const variants = {
   horizontal: {
-    src: '/assets/logo-horizontal.png',
+    src: '/assets/logo-horizontal.webp',
     width: 280,
     height: 74,
     defaultClass: 'h-7 w-auto sm:h-8 sm:w-auto',
   },
   full: {
-    src: '/assets/logo-full.png',
+    src: '/assets/logo-full.webp',
     width: 320,
     height: 320,
     defaultClass: 'w-10 h-10 sm:w-12 sm:h-12',
@@ -41,6 +41,7 @@ export function BrandLogo({
       height={config.height}
       loading={loading}
       decoding="async"
+      fetchPriority={loading === 'eager' ? 'high' : 'low'}
       className={`object-contain block ${sizeClass}`}
       style={{ imageRendering: 'auto' }}
     />

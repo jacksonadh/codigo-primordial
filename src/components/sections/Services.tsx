@@ -74,7 +74,7 @@ export function Services() {
                   {service.benefits.map((benefit) => (
                     <span
                       key={benefit}
-                      className="px-3 py-1 bg-secondary/10 text-secondary text-sm rounded-full"
+                      className="px-3 py-1 bg-secondary/15 text-secondary-300 text-sm rounded-full"
                     >
                       {benefit}
                     </span>

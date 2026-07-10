@@ -14,7 +14,7 @@
     <meta name="language" content="Portuguese" />
     <meta name="revisit-after" content="7 days" />
     
-    <!-- Canonical URL - Atualize para seu domínio -->
+    <!-- Canonical URL -->
     <link rel="canonical" href="https://codigoprimordial.vercel.app/" />
     
     <!-- Favicon -->
@@ -40,25 +40,24 @@
     <meta name="twitter:image" content="https://codigoprimordial.vercel.app/assets/og-image.svg" />
     
     <!-- Theme Color -->
-    <meta name="theme-color" content="#0a0a0a" />
-    <meta name="msapplication-TileColor" content="#0a0a0a" />
+    <meta name="theme-color" content="#090909" />
+    <meta name="msapplication-TileColor" content="#090909" />
     
     <!-- Preconnect for Performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-    
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PE2WZFVPJ9"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-PE2WZFVPJ9');
-    </script>
-    
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Fonts: carregamento nao-bloqueante (elimina render-blocking) -->
+    <link rel="preload" as="style"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" />
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap"
+      media="print" onload="this.media='all'" />
+    <noscript>
+      <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" />
+    </noscript>
     
     <!-- Schema.org JSON-LD -->
     <script type="application/ld+json">
@@ -119,7 +118,7 @@
             "@type": "Offer",
             "itemOffered": {
               "@type": "Service",
-              "name": "Lojas VTEX IO e E-commerce",
+              "name": "Lojas Virtuais VTEX, Nuvemshop e E-commerce",
               "description": "Lojas virtuais completas com checkout otimizado"
             }
           },
@@ -139,5 +138,25 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Google Analytics: carregado com requestIdleCallback para nao competir com LCP/FCP -->
+    <script>
+      function loadGA() {
+        var s = document.createElement('script');
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-PE2WZFVPJ9';
+        s.async = true;
+        document.head.appendChild(s);
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){ window.dataLayer.push(arguments); }
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', 'G-PE2WZFVPJ9');
+      }
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(loadGA);
+      } else {
+        setTimeout(loadGA, 3000);
+      }
+    </script>
   </body>
 </html>

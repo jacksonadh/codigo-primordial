@@ -4,24 +4,22 @@ import { Card } from "../common/Card";
 
 const projects = [
   {
-    title: "Landing Page Responsiva",
-    client: "7 Days of Code - Alura",
+    title: "E-commerce de Artes",
+    client: "Blubi colab studio",
     description:
-      "Landing page moderna desenvolvida em HTML, CSS e JavaScript puro. Design responsivo com foco em performance e experiência do usuário.",
-    image:
-      "https://github.com/jacksonadh/Alura7DaysOfCodeHtml/raw/master/img/img%20para%20readme/Desktop.png",
-    tags: ["HTML5", "CSS3", "JavaScript", "Responsivo"],
-    metrics: ["Performance 95+", "Mobile-first", "Carregamento < 2s"],
-    liveUrl: "https://jacksonadh.github.io/Alura7DaysOfCodeHtml/",
-    repoUrl: "https://github.com/jacksonadh/Alura7DaysOfCodeHtml",
+      "Expansão das vendas físicas em feiras para o digital. Loja virtual na Nuvemshop com estrutura pronta para integração com Shopee, Mercado Livre e outros marketplaces.",
+    image: "/assets/portfolio/bluebi.webp",
+    tags: ["Nuvemshop", "Marketplace", "Pagamento Online", "Marketing Digital", "E-commerce"],
+    metrics: ["Vendas online", "Multi-canal", "Pronto para Shopee", "Pronto para tiktok shop"],
+    liveUrl: "https://blubi.lojavirtualnuvem.com.br",
+    repoUrl: null,
   },
   {
     title: "Rota Bahia Turismo",
     client: "Rota Bahia Turismo",
     description:
       "Site institucional para a Rota Bahia, agência de turismo e receptivo em Salvador, Bahia.",
-    image:
-      "https://github.com/jacksonadh/projects-image/raw/main/rota-bahia.png",
+    image: "/assets/portfolio/rotabahia.webp",
     tags: ["Next.js 16+", "TypeScript", "Tailwind CSS 4"],
     metrics: ["Interface intuitiva", "SEO otimizado"],
     liveUrl: "https://rota-bahia-turismo.vercel.app/",
@@ -32,7 +30,7 @@ const projects = [
     client: "Elev'up Consultoria",
     description:
       "Site institucional moderno para a Elev'up Consultoria, especializada em Gestão Financeira e Recursos Humanos para pequenas e médias empresas.",
-    image: "https://github.com/jacksonadh/projects-image/raw/main/elevup.png",
+    image: "/assets/portfolio/elevup.webp",
     tags: ["Next.js 16+", "TypeScript", "Tailwind CSS 4"],
     metrics: ["+30% conversão", "SEO otimizado", "Real-time updates"],
     liveUrl: "https://elevup-consultoria.vercel.app/",
@@ -61,6 +59,10 @@ export function Portfolio() {
                     src={project.image}
                     alt={`Screenshot do projeto ${project.title} - ${project.client}`}
                     loading="lazy"
+                    decoding="async"
+                    width={438}
+                    height={192}
+                    fetchPriority="low"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 ) : (
