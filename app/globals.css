@@ -148,7 +148,8 @@
     .animate-slide-up,
     .animate-slide-down,
     .animate-pulse,
-    .animate-bounce {
+    .animate-bounce,
+    .animate-spin {
       animation: none !important;
       opacity: 1 !important;
       transform: none !important;

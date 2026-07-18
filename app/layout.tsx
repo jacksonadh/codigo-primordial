@@ -4,7 +4,7 @@ import { SITE_DESCRIPTION, SITE_NAME } from '@/config/site'
 import { buildOrganizationJsonLd, buildPageMetadata } from '@/lib/seo'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { GoogleAnalytics } from '@/components/seo/GoogleAnalytics'
-import { VercelAnalytics } from '@/components/seo/VercelAnalytics'
+import { Analytics } from '@vercel/analytics/next'
 import { Navbar } from '@/components/common/Navbar'
 import { Footer } from '@/components/sections/Footer'
 import './globals.css'
@@ -44,7 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main>{children}</main>
         <Footer />
         <GoogleAnalytics />
-        <VercelAnalytics />
+        <Analytics />
       </body>
     </html>
   )

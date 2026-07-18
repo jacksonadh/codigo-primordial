@@ -7,6 +7,21 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+### Changed
+- `BrandPatternBackground` convertido para Server Component (remove client boundary do Hero e Footer)
+- FAQ reescrito com `<details>/<summary>` nativo — elimina JS de accordion
+- Contact lazy-loaded via `next/dynamic` na home (SSR preservado)
+- Navbar: removido scroll listener; estilo fixo com `backdrop-blur-md`
+- Hero: removido noise layer SVG duplicado; blobs decorativos agora estáticos (sem `animate-pulse`)
+- Google Analytics alterado de `afterInteractive` para `lazyOnload` (trade-off: bounces <2s podem não registrar page view)
+- `VercelAnalytics` wrapper eliminado; importação direta de `@vercel/analytics/next`
+- Logo `BrandLogo`: adicionado `sizes` responsivo por variante (evita srcset 3840px)
+- Portfolio images: adicionado `sizes` responsivo ao grid
+- `next.config.ts`: adicionado AVIF como formato preferencial de imagem
+- Contact: `localStorage.setItem` com debounce de 500ms (reduz sync I/O)
+- `globals.css`: `animate-spin` incluído no bloco `prefers-reduced-motion`
+- Removidos keyframes não utilizados (`pulseGlow`, `pulseGlowPurple`) do Tailwind config
+
 ### Added
 - Migração para **Next.js 15 App Router** com SSG e metadados por rota
 - Páginas dedicadas: `/landing-pages`, `/sites-institucionais`, `/aplicacoes-web`, `/lojas-virtuais`, `/vtex`, `/manutencao-e-suporte`, `/treinamentos`, `/portfolio`, `/sobre`, `/contato`

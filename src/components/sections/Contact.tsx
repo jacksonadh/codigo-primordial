@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, FormEvent, useMemo, Suspense } from 'react'
+import { useState, useEffect, useRef, useCallback, FormEvent, useMemo, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Send, Mail, CheckCircle, AlertCircle, Loader2, Phone } from 'lucide-react'
 import { SITE_EMAIL } from '@/config/site'
@@ -106,6 +106,20 @@ function ContactFormContent({ showPageHeading = false }: { showPageHeading?: boo
   const [status, setStatus] = useState<FormStatus>('idle')
   const [errorMessage, setErrorMessage] = useState('')
   const [formData, setFormData] = useState<FormData>(initialFormData)
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const debouncedSave = useCallback((data: FormData) => {
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
+    saveTimerRef.current = setTimeout(() => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+    }, 500)
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
+    }
+  }, [])
 
   const intent = searchParams.get('intent')
   const serviceParam = searchParams.get('service')
@@ -197,7 +211,7 @@ function ContactFormContent({ showPageHeading = false }: { showPageHeading?: boo
     const updatedData = { ...formData, [name]: newValue }
 
     setFormData(updatedData)
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedData))
+    debouncedSave(updatedData)
   }
 
   const resetForm = () => {

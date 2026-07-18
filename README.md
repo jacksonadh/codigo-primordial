@@ -25,9 +25,10 @@ Site comercial da agência **Código Primordial**, com páginas indexáveis por 
 
 - Design dark/neon (verde `#39ff14`, roxo `#8b5cf6`)
 - Next.js App Router com SSG e metadados por rota
-- 11 URLs indexáveis (home + 10 páginas)
+- 13 URLs indexáveis (home + 12 páginas)
 - Formulário com qualificação de lead e consentimento LGPD
 - Limites explícitos para evolução de lojas VTEX existentes
+- Performance mobile otimizada: Server Components, lazy-load, GA `lazyOnload`, imagens com `sizes` e AVIF
 
 ---
 

@@ -48,6 +48,7 @@ export function Portfolio({ showPageHeading = false, limit }: PortfolioProps) {
                   alt={`Screenshot do projeto ${project.title} - ${project.client}`}
                   width={438}
                   height={192}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />

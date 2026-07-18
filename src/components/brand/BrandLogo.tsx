@@ -18,10 +18,12 @@ const variants = {
   horizontal: {
     ...LOGO,
     defaultClass: 'h-10 w-auto sm:h-12 md:h-14',
+    sizes: '(max-width: 640px) 280px, (max-width: 768px) 380px, 560px',
   },
   compact: {
     ...LOGO,
     defaultClass: 'h-8 w-auto sm:h-10',
+    sizes: '(max-width: 640px) 120px, 160px',
   },
 } as const
 
@@ -40,6 +42,7 @@ export function BrandLogo({
       alt="Logo Código Primordial"
       width={config.width}
       height={config.height}
+      sizes={config.sizes}
       priority={loading === 'eager'}
       loading={loading}
       className={`object-contain block ${sizeClass}`}

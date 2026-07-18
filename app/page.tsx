@@ -6,12 +6,17 @@ import {
   MaintenancePlans,
   About,
   FAQ,
-  Contact,
 } from '@/components/sections'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { ROUTES } from '@/config/site'
 import { Button } from '@/components/common/Button'
+
+const Contact = dynamic(
+  () => import('@/components/sections/Contact').then((m) => m.Contact),
+  { ssr: true }
+)
 
 export default function HomePage() {
   return (

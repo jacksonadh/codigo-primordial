@@ -1,6 +1,3 @@
-'use client'
-
-import { useMemo } from 'react'
 import { BrandSymbol } from './BrandSymbol'
 import {
   allSymbolNames,
@@ -101,11 +98,7 @@ export function BrandPatternBackground({
   className = '',
 }: BrandPatternBackgroundProps) {
   const { count, maxSize } = densityConfig[density]
-
-  const placements = useMemo(
-    () => generatePlacements(count, maxSize),
-    [count, maxSize]
-  )
+  const placements = generatePlacements(count, maxSize)
 
   return (
     <div
