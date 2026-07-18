@@ -8,16 +8,30 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ## [Unreleased]
 
 ### Added
-- **Google Analytics 4** integrado para análise avançada de tráfego
-  - Tracking ID: `G-PE2WZFVPJ9`
-  - Script adicionado no `<head>` do `index.html`
-  - Complementa o Vercel Analytics com métricas detalhadas
+- Migração para **Next.js 15 App Router** com SSG e metadados por rota
+- Páginas dedicadas: `/landing-pages`, `/sites-institucionais`, `/aplicacoes-web`, `/lojas-virtuais`, `/vtex`, `/manutencao-e-suporte`, `/treinamentos`, `/portfolio`, `/sobre`, `/contato`
+- Seções na home: Problemas atendidos, Diferenciais, Planos de manutenção, FAQ
+- `app/sitemap.ts` e `app/robots.ts` dinâmicos
+- `public/site.webmanifest` e OG image PNG 1200×630
+- Formulário qualificado com objetivo, prazo, consentimento LGPD e CTAs diferenciados (orçamento vs diagnóstico)
+- Centralização de SEO em `src/lib/seo.ts` e conteúdo em `src/content/`
 
-### Planned
-- Blog com estudos de caso detalhados
-- Versão em inglês (i18n)
-- Animações avançadas com Framer Motion
-- Modo claro/escuro (dark/light theme toggle)
+### Changed
+- Domínio canônico atualizado para `https://www.codigoprimordial.com`
+- Fundador reposicionado como **Desenvolvedor Full Stack**
+- Serviços reorganizados em 6 categorias com limites honestos de VTEX
+- Hero alinhado: 5+ anos / 30+ projetos
+- API de e-mail migrada para Route Handler (`app/api/send-email/route.ts`)
+
+### Fixed
+- OG image movida para `public/assets/` (corrige 404 em produção)
+- Removidas referências a São Paulo em keywords
+- Removido depoimento anônimo não verificável
+- Removida métrica "+30% conversão" não verificável do portfólio Elev'up
+
+### Removed
+- Stack Vite SPA (`index.html`, `vite.config.ts`, rewrites SPA)
+- `public/sitemap.xml` e `public/robots.txt` estáticos (substituídos por rotas Next.js)
 
 ---
 

@@ -1,4 +1,6 @@
+import Link from 'next/link'
 import { Code2, Zap, Users, Award, ArrowRight } from 'lucide-react'
+import { FOUNDER, LOCATION, ROUTES } from '@/config/site'
 import { SectionTitle } from '../common/SectionTitle'
 
 const techStack = [
@@ -21,7 +23,7 @@ const values = [
   {
     icon: Zap,
     title: 'Performance',
-    description: 'Sites que carregam em menos de 3 segundos. Melhor experiência, melhor SEO, mais conversão.',
+    description: 'Sites que carregam rápido. Melhor experiência, melhor SEO, mais conversão.',
   },
   {
     icon: Users,
@@ -35,41 +37,62 @@ const values = [
   },
 ]
 
-export function About() {
+interface AboutProps {
+  showPageHeading?: boolean
+}
+
+export function About({ showPageHeading = false }: AboutProps) {
   return (
-    <section id="sobre" className="py-20 md:py-32 bg-surface-dark" aria-labelledby="sobre-nos-titulo">
+    <section id="sobre" className="py-20 md:py-32 bg-surface-dark" aria-labelledby={showPageHeading ? undefined : 'sobre-nos-titulo'}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionTitle 
-          subtitle="Resultados sólidos com tecnologia de ponta"
-        >
-          Sobre Nós
-        </SectionTitle>
+        {showPageHeading ? (
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-text mb-4 text-center">
+            <span className="text-primary font-mono" aria-hidden="true">&lt;</span>
+            Sobre a Código Primordial
+            <span className="text-primary font-mono" aria-hidden="true">/&gt;</span>
+          </h1>
+        ) : (
+          <SectionTitle subtitle="Resultados sólidos com tecnologia de ponta">
+            Sobre Nós
+          </SectionTitle>
+        )}
+
+        {!showPageHeading && (
+          <p className="text-text-muted text-lg text-center max-w-2xl mx-auto mb-12 -mt-8">
+            Resultados sólidos com tecnologia de ponta
+          </p>
+        )}
+
+        {showPageHeading && (
+          <p className="text-text-muted text-lg text-center max-w-2xl mx-auto mb-12">
+            Agência de desenvolvimento remota, base em {LOCATION.city}–{LOCATION.state}. {LOCATION.remoteNote}.
+          </p>
+        )}
 
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           <div>
-            <h3 className="text-2xl md:text-3xl font-bold text-text mb-6">
+            <h2 className="text-2xl md:text-3xl font-bold text-text mb-6">
               Seu projeto merece{' '}
               <span className="text-primary">código que gera resultados</span>
-            </h3>
-            
+            </h2>
+
             <div className="space-y-4 text-text-muted leading-relaxed">
               <p>
-                Desenvolvemos aplicações web, e-commerces e sistemas que funcionam. 
-                Sem gambiarras, sem código legado, sem surpresas. Nossa especialidade 
-                é transformar demandas complexas em soluções rápidas, escaláveis e 
-                prontas para crescer junto com seu negócio.
+                Desenvolvemos aplicações web, e-commerces e sistemas que funcionam.
+                Sem gambiarras, sem surpresas. Nossa especialidade é transformar demandas
+                complexas em soluções rápidas, escaláveis e prontas para crescer junto com seu negócio.
               </p>
               <p>
-                Trabalhamos com empresas que valorizam qualidade técnica e entregas 
-                no prazo. Cada projeto recebe atenção dedicada, com comunicação clara 
-                e processos bem definidos. Do briefing ao deploy, você acompanha 
+                Trabalhamos com empresas que valorizam qualidade técnica e entregas
+                no prazo. Cada projeto recebe atenção dedicada, com comunicação clara
+                e processos bem definidos. Do briefing ao deploy, você acompanha
                 cada etapa e sabe exatamente o que está sendo construído.
               </p>
               <p>
-                A <strong className="text-text">Código Primordial</strong> é liderada 
-                por <strong className="text-text">Jackson Almeida</strong>, desenvolvedor 
-                front-end com mais de 5 anos de experiência em projetos para empresas 
-                como <strong className="text-text">Amara Nzero Brasil</strong>, além de 
+                A <strong className="text-text">Código Primordial</strong> é liderada
+                por <strong className="text-text">{FOUNDER.name}</strong>, {FOUNDER.jobTitle.toLowerCase()} com
+                mais de 5 anos de experiência em projetos para empresas
+                como <strong className="text-text">Amara Nzero Brasil</strong>, além de
                 e-commerces e aplicações corporativas de alta demanda.
               </p>
             </div>
@@ -93,19 +116,15 @@ export function About() {
             {values.map((value) => {
               const Icon = value.icon
               return (
-                <div 
+                <div
                   key={value.title}
                   className="p-6 bg-surface rounded-2xl border border-surface-light hover:border-primary/30 transition-colors group"
                 >
                   <div className="p-3 bg-primary/10 rounded-xl w-fit mb-4 group-hover:bg-primary/20 transition-colors">
                     <Icon className="w-6 h-6 text-primary" />
                   </div>
-                  <h4 className="text-lg font-semibold text-text mb-2">
-                    {value.title}
-                  </h4>
-                  <p className="text-text-muted text-sm">
-                    {value.description}
-                  </p>
+                  <h3 className="text-lg font-semibold text-text mb-2">{value.title}</h3>
+                  <p className="text-text-muted text-sm">{value.description}</p>
                 </div>
               )
             })}
@@ -116,13 +135,13 @@ export function About() {
           <p className="text-text-muted mb-4">
             Pronto para começar seu projeto com uma equipe que entrega?
           </p>
-          <a 
-            href="#contato"
-            className="inline-flex items-center gap-2 text-primary hover:text-primary-400 font-semibold transition-colors"
+          <Link
+            href={`${ROUTES.contato}?intent=orcamento`}
+            className="inline-flex items-center gap-2 text-primary hover:text-primary-400 font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-lg px-2 py-1"
           >
             Solicitar orçamento
             <ArrowRight size={16} />
-          </a>
+          </Link>
         </div>
       </div>
     </section>

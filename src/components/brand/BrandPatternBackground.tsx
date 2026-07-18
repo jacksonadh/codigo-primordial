@@ -1,3 +1,5 @@
+'use client'
+
 import { useMemo } from 'react'
 import { BrandSymbol } from './BrandSymbol'
 import {
@@ -26,19 +28,11 @@ interface BrandPatternBackgroundProps {
   className?: string
 }
 
-/**
- * Gerador determinístico pseudo-aleatório (seed).
- * Evita re-renders com valores diferentes, mantendo layout estável.
- */
 function seededRandom(seed: number) {
   const x = Math.sin(seed + 1) * 10000
   return x - Math.floor(x)
 }
 
-/**
- * Distribui símbolos predominantemente nas bordas do container,
- * mantendo a região central mais limpa para o conteúdo.
- */
 function generatePlacements(count: number, maxSize: number): SymbolPlacement[] {
   const placements: SymbolPlacement[] = []
   const symbolCount = allSymbolNames.length
@@ -68,10 +62,6 @@ function generatePlacements(count: number, maxSize: number): SymbolPlacement[] {
 
     const rotate = -20 + r5 * 40
 
-    /**
-     * Posicionamento nas bordas: divide o espaço em zonas de borda (0-20% e 80-100%)
-     * para ambos os eixos, com uma pequena chance de aparecer no meio.
-     */
     let topPct: number
     let leftPct: number
 
@@ -79,19 +69,15 @@ function generatePlacements(count: number, maxSize: number): SymbolPlacement[] {
     const edgeOffset = r1 * 16
 
     if (zone === 0) {
-      // Borda esquerda
       topPct = 5 + r2 * 88
       leftPct = edgeOffset
     } else if (zone === 1) {
-      // Borda direita
       topPct = 5 + r2 * 88
       leftPct = 84 + edgeOffset
     } else if (zone === 2) {
-      // Borda superior
       topPct = edgeOffset
       leftPct = 5 + r2 * 88
     } else {
-      // Borda inferior
       topPct = 84 + edgeOffset * 0.6
       leftPct = 5 + r2 * 88
     }

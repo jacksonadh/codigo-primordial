@@ -1,28 +1,29 @@
+import Link from 'next/link'
+import Image from 'next/image'
+
 interface BrandLogoProps {
-  variant?: 'horizontal' | 'full'
+  variant?: 'horizontal' | 'compact'
   loading?: 'eager' | 'lazy'
-  /**
-   * Quando fornecido, substitui completamente as classes de tamanho padrão.
-   * Use para customizar dimensões em contextos específicos (hero, footer, etc).
-   */
   className?: string
   href?: string
 }
 
+const LOGO = {
+  src: '/assets/logoHorizontalNova.png',
+  width: 1400,
+  height: 300,
+} as const
+
 const variants = {
   horizontal: {
-    src: '/assets/logo-horizontal.webp',
-    width: 280,
-    height: 74,
-    defaultClass: 'h-7 w-auto sm:h-8 sm:w-auto',
+    ...LOGO,
+    defaultClass: 'h-10 w-auto sm:h-12 md:h-14',
   },
-  full: {
-    src: '/assets/logo-full.webp',
-    width: 320,
-    height: 320,
-    defaultClass: 'w-10 h-10 sm:w-12 sm:h-12',
+  compact: {
+    ...LOGO,
+    defaultClass: 'h-8 w-auto sm:h-10',
   },
-}
+} as const
 
 export function BrandLogo({
   variant = 'horizontal',
@@ -34,24 +35,22 @@ export function BrandLogo({
   const sizeClass = className ?? config.defaultClass
 
   const img = (
-    <img
+    <Image
       src={config.src}
       alt="Logo Código Primordial"
       width={config.width}
       height={config.height}
+      priority={loading === 'eager'}
       loading={loading}
-      decoding="async"
-      fetchPriority={loading === 'eager' ? 'high' : 'low'}
       className={`object-contain block ${sizeClass}`}
-      style={{ imageRendering: 'auto' }}
     />
   )
 
   if (href) {
     return (
-      <a href={href} aria-label="Ir para o início">
+      <Link href={href} aria-label="Ir para o início">
         {img}
-      </a>
+      </Link>
     )
   }
 

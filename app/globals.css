@@ -19,8 +19,7 @@
   }
 
   body {
-    @apply bg-background text-text antialiased;
-    font-family: 'Outfit', sans-serif;
+    @apply bg-background text-text antialiased font-sans;
     background-color: var(--brand-black);
   }
 
@@ -71,10 +70,6 @@
       0 8px 32px rgba(111, 34, 201, 0.12);
   }
 
-  /**
-   * Textura de fundo — noise sutil via SVG inline, sem arquivos externos.
-   * Opacidade baixa para não competir com o conteúdo.
-   */
   .texture-noise {
     position: relative;
   }
@@ -91,10 +86,6 @@
     background-size: 200px 200px;
   }
 
-  /**
-   * Borda com efeito grunge — borda irregular usando clip-path.
-   * Discreto, evita parecer cortado em mobile.
-   */
   .border-grunge {
     border: 1px solid transparent;
     background-clip: padding-box;
@@ -116,10 +107,6 @@
     pointer-events: none;
   }
 
-  /**
-   * Seção com iluminação central sutil — centro ligeiramente mais visível,
-   * bordas mais escuras, reforçando a hierarquia de conteúdo.
-   */
   .section-vignette {
     background-image:
       radial-gradient(
@@ -153,6 +140,10 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
     .animate-fade-in,
     .animate-slide-up,
     .animate-slide-down,

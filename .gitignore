@@ -3,6 +3,11 @@ node_modules/
 
 # Build output
 dist/
+.next/
+out/
+
+# TypeScript
+*.tsbuildinfo
 
 # IDE
 .vscode/
@@ -13,6 +18,7 @@ dist/
 # OS
 .DS_Store
 Thumbs.db
+nul
 
 # Environment variables (keep .env.example)
 .env

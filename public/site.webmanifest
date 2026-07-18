@@ -1,0 +1,24 @@
+{
+  "name": "Código Primordial",
+  "short_name": "Código Primordial",
+  "description": "Desenvolvemos e evoluímos produtos digitais para empresas.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#090909",
+  "theme_color": "#090909",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/logoHorizontalNova.png",
+      "sizes": "1400x300",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

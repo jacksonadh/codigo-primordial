@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { ButtonHTMLAttributes, ReactNode } from 'react'
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost'
@@ -44,6 +45,10 @@ const sizeStyles: Record<ButtonSize, string> = {
   lg: 'px-8 py-4 text-lg rounded-xl',
 }
 
+function isInternalHref(href: string): boolean {
+  return href.startsWith('/') || href.startsWith('#')
+}
+
 export function Button({
   children,
   variant = 'primary',
@@ -52,10 +57,18 @@ export function Button({
   className = '',
   ...props
 }: ButtonProps) {
-  const baseStyles = 'inline-flex items-center justify-center gap-2 cursor-pointer'
+  const baseStyles = 'inline-flex items-center justify-center gap-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background'
   const combinedStyles = `${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`
 
   if (href) {
+    if (href.startsWith('/')) {
+      return (
+        <Link href={href} className={combinedStyles}>
+          {children}
+        </Link>
+      )
+    }
+
     return (
       <a href={href} className={combinedStyles}>
         {children}
@@ -69,3 +82,5 @@ export function Button({
     </button>
   )
 }
+
+export { isInternalHref }

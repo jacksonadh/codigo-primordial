@@ -1,103 +1,90 @@
-import { Globe, Code2, ShoppingCart, Wrench, ArrowRight } from 'lucide-react'
+import Link from 'next/link'
+import { Globe, Code2, ShoppingCart, Wrench, GraduationCap, ArrowRight } from 'lucide-react'
+import { services, type ServiceContent } from '@/content/services'
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '../common/Card'
 import { SectionTitle } from '../common/SectionTitle'
 import { Button } from '../common/Button'
 
-const services = [
-  {
-    icon: Globe,
-    title: 'Landing Pages e Sites Institucionais',
-    description: 'Sua empresa precisa ser encontrada e gerar confiança em segundos. Criamos sites que carregam rápido, aparecem no Google e convertem visitantes em leads qualificados.',
-    benefits: ['Conversão de leads', 'SEO que rankeia', 'Carregamento rápido'],
-    cta: 'Criar minha landing page',
-  },
-  {
-    icon: Code2,
-    title: 'Aplicações Web em React/TypeScript',
-    description: 'Dashboards, painéis administrativos e sistemas sob medida. Interfaces que sua equipe realmente usa, com código que não vira legado em 6 meses.',
-    benefits: ['Escala sem retrabalho', 'Interface intuitiva', 'Código limpo'],
-    cta: 'Desenvolver minha aplicação',
-  },
-  {
-    icon: ShoppingCart,
-    title: 'Lojas Virtuais — VTEX, Nuvemshop e E-commerce',
-    description: 'Checkout que não abandona carrinho. Lojas em VTEX, Nuvemshop ou plataforma customizada com foco em redução de atrito e aumento de ticket médio. Venda mais com menos cliques.',
-    benefits: ['Menos abandono', 'Mais conversão', 'Integração com ERP'],
-    cta: 'Escalar meu e-commerce',
-  },
-  {
-    icon: Wrench,
-    title: 'Consultoria e Manutenção Front-end',
-    description: 'Seu site já existe mas está lento, quebrado ou defasado? Fazemos diagnóstico, correção e evolução sem precisar recomeçar do zero.',
-    benefits: ['Correção rápida', 'Evolução contínua', 'Sem refazer tudo'],
-    cta: 'Solicitar diagnóstico',
-  },
-]
+const iconMap = {
+  globe: Globe,
+  code: Code2,
+  shopping: ShoppingCart,
+  vtex: ShoppingCart,
+  wrench: Wrench,
+  graduation: GraduationCap,
+} as const
 
-export function Services() {
+function ServiceIcon({ service }: { service: ServiceContent }) {
+  const Icon = iconMap[service.icon]
   return (
-    <section id="servicos" className="py-20 md:py-32 bg-surface-dark" aria-labelledby="servicos-titulo">
+    <div className="p-3 bg-primary/10 rounded-xl group-hover:bg-primary/20 transition-colors">
+      <Icon className="w-6 h-6 text-primary" />
+    </div>
+  )
+}
+
+interface ServicesProps {
+  showPageHeading?: boolean
+}
+
+export function Services({ showPageHeading = false }: ServicesProps) {
+  return (
+    <section className="py-20 md:py-32 bg-surface-dark" aria-labelledby={showPageHeading ? undefined : 'servicos-titulo'}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionTitle 
-          subtitle="Do primeiro clique até a conversão. Soluções que geram receita."
-        >
-          O que entregamos
-        </SectionTitle>
+        {showPageHeading ? (
+          <>
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-text mb-4 text-center">
+              <span className="text-primary font-mono" aria-hidden="true">&lt;</span>
+              Serviços
+              <span className="text-primary font-mono" aria-hidden="true">/&gt;</span>
+            </h1>
+            <p className="text-text-muted text-lg text-center max-w-2xl mx-auto mb-12">
+              Do primeiro clique à evolução contínua. Soluções claras, com limites honestos.
+            </p>
+          </>
+        ) : (
+          <SectionTitle subtitle="Do primeiro clique à evolução contínua. Soluções claras, com limites honestos.">
+            O que entregamos
+          </SectionTitle>
+        )}
 
         <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
-          {services.map((service) => {
-            const Icon = service.icon
-            return (
-              <Card 
-                key={service.title} 
-                className="group"
-                glow
-              >
-                <CardHeader>
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 bg-primary/10 rounded-xl group-hover:bg-primary/20 transition-colors">
-                      <Icon className="w-6 h-6 text-primary" />
-                    </div>
-                    <div className="flex-1">
-                      <CardTitle className="group-hover:text-primary transition-colors">
+          {services.map((service) => (
+            <Card key={service.slug} className="group" glow>
+              <CardHeader>
+                <div className="flex items-start gap-4">
+                  <ServiceIcon service={service} />
+                  <div className="flex-1">
+                    <CardTitle className="group-hover:text-primary transition-colors">
+                      <Link href={`/${service.slug}`} className="hover:text-primary">
                         {service.title}
-                      </CardTitle>
-                    </div>
+                      </Link>
+                    </CardTitle>
                   </div>
-                </CardHeader>
-                
-                <CardDescription className="mb-4">
-                  {service.description}
-                </CardDescription>
-
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {service.benefits.map((benefit) => (
-                    <span
-                      key={benefit}
-                      className="px-3 py-1 bg-secondary/15 text-secondary-300 text-sm rounded-full"
-                    >
-                      {benefit}
-                    </span>
-                  ))}
                 </div>
+              </CardHeader>
 
-                <CardFooter>
-                  <Button 
-                    href="#contato" 
-                    variant="ghost" 
-                    size="sm"
-                    className="group/btn"
+              <CardDescription className="mb-4">{service.summary}</CardDescription>
+
+              <div className="flex flex-wrap gap-2 mb-4">
+                {service.benefits.map((benefit) => (
+                  <span
+                    key={benefit}
+                    className="px-3 py-1 bg-secondary/15 text-secondary-300 text-sm rounded-full"
                   >
-                    {service.cta}
-                    <ArrowRight 
-                      size={16} 
-                      className="group-hover/btn:translate-x-1 transition-transform" 
-                    />
-                  </Button>
-                </CardFooter>
-              </Card>
-            )
-          })}
+                    {benefit}
+                  </span>
+                ))}
+              </div>
+
+              <CardFooter>
+                <Button href={`/contato?service=${service.slug}`} variant="ghost" size="sm" className="group/btn">
+                  {service.cta}
+                  <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
         </div>
       </div>
     </section>

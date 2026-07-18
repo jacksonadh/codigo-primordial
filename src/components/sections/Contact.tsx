@@ -1,16 +1,38 @@
-import { useState, useEffect, FormEvent, useMemo } from 'react'
-import { Send, Mail, CheckCircle, AlertCircle, Loader2, Phone, User } from 'lucide-react'
+'use client'
+
+import { useState, useEffect, FormEvent, useMemo, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { Send, Mail, CheckCircle, AlertCircle, Loader2, Phone } from 'lucide-react'
+import { SITE_EMAIL } from '@/config/site'
 import { SectionTitle } from '../common/SectionTitle'
 import { Button } from '../common/Button'
 
 const projectTypes = [
-  { value: 'site', label: 'Site institucional ou portfólio' },
-  { value: 'landing', label: 'Landing page (campanha ou lançamento)' },
-  { value: 'ecommerce', label: 'Loja virtual / E-commerce' },
-  { value: 'sistema', label: 'Sistema ou plataforma web' },
-  { value: 'saas', label: 'Produto digital / SaaS' },
-  { value: 'manutencao', label: 'Manutenção ou melhorias em projeto existente' },
+  { value: 'landing-pages', label: 'Landing page' },
+  { value: 'sites-institucionais', label: 'Site institucional' },
+  { value: 'aplicacoes-web', label: 'Aplicação web ou MVP' },
+  { value: 'lojas-virtuais', label: 'Loja virtual / Nuvemshop' },
+  { value: 'vtex', label: 'Evolução de loja VTEX existente' },
+  { value: 'manutencao-e-suporte', label: 'Manutenção ou diagnóstico' },
+  { value: 'treinamentos', label: 'Treinamento ou workshop' },
   { value: 'outro', label: 'Outro (descreva na mensagem)' },
+]
+
+const objectiveOptions = [
+  { value: 'vender', label: 'Vender mais / gerar receita' },
+  { value: 'leads', label: 'Captar leads qualificados' },
+  { value: 'organizar', label: 'Organizar processos / operação' },
+  { value: 'validar', label: 'Validar uma ideia ou MVP' },
+  { value: 'corrigir', label: 'Corrigir ou evoluir projeto existente' },
+  { value: 'capacitar', label: 'Capacitar equipe' },
+  { value: 'outro', label: 'Outro objetivo' },
+]
+
+const timelineOptions = [
+  { value: 'urgente', label: 'Urgente (até 1 mês)' },
+  { value: '1-3-meses', label: '1 a 3 meses' },
+  { value: '3-6-meses', label: '3 a 6 meses' },
+  { value: 'flexivel', label: 'Flexível / sem prazo rígido' },
 ]
 
 const budgetRanges = [
@@ -23,54 +45,50 @@ const budgetRanges = [
 ]
 
 const messagePlaceholders: Record<string, string> = {
-  site: `Descreva sua empresa e o objetivo do site.
-- Qual o público-alvo?
-- Tem referências ou sites que gosta?
-- Existe prazo ou data importante?`,
-
-  landing: `Qual o objetivo da landing page?
-- É para captar leads, vender ou lançar algo?
-- Tem referências visuais?
-- Quando precisa estar no ar?`,
-
-  ecommerce: `Conte sobre seus produtos e mercado.
-- Quantos produtos pretende vender?
-- Já usa alguma plataforma?
-- Qual o prazo desejado?`,
-
-  sistema: `Descreva o problema que o sistema precisa resolver.
-- Quem vai usar?
-- Existe algo similar no mercado?
-- Quais funcionalidades são essenciais?`,
-
-  saas: `Descreva sua ideia de produto.
-- Qual problema ele resolve?
-- Quem é o usuário ideal?
-- Está em fase de validação ou escala?`,
-
-  manutencao: `Conte sobre o projeto atual.
-- O que precisa ser melhorado?
-- Quais problemas está enfrentando?
-- Tem acesso ao código-fonte?`,
-
-  outro: `Descreva seu projeto ou ideia.
-- Qual o objetivo principal?
-- Quem é o público-alvo?
-- Tem prazo ou orçamento definido?`,
-
-  default: `Descreva seu projeto ou necessidade.
-- Qual o objetivo?
-- Quem é o público-alvo?
-- Tem referências ou prazo?`,
+  'landing-pages': 'Qual campanha ou lançamento? Tem referências visuais?',
+  'sites-institucionais': 'Descreva sua empresa e o objetivo do site.',
+  'aplicacoes-web': 'Qual problema o sistema precisa resolver?',
+  'lojas-virtuais': 'Quantos produtos? Já usa alguma plataforma?',
+  vtex: 'Descreva a loja VTEX e a demanda específica (checkout, componentes, integração...).',
+  'manutencao-e-suporte': 'Conte sobre o projeto atual e o que precisa ser melhorado.',
+  treinamentos: 'Qual equipe, nível técnico e tema desejado?',
+  outro: 'Descreva seu projeto ou necessidade.',
+  default: 'Descreva seu projeto ou necessidade.',
 }
 
 type FormStatus = 'idle' | 'loading' | 'success' | 'error'
 
 const STORAGE_KEY = 'contact-form-draft'
 
+interface FormData {
+  name: string
+  email: string
+  phone: string
+  company: string
+  projectType: string
+  objective: string
+  timeline: string
+  budget: string
+  message: string
+  privacyConsent: boolean
+}
+
+const initialFormData: FormData = {
+  name: '',
+  email: '',
+  phone: '',
+  company: '',
+  projectType: '',
+  objective: '',
+  timeline: '',
+  budget: '',
+  message: '',
+  privacyConsent: false,
+}
+
 function formatPhone(value: string): string {
   const numbers = value.replace(/\D/g, '')
-  
+
   if (numbers.length <= 2) {
     return numbers.length ? `(${numbers}` : ''
   }
@@ -83,18 +101,17 @@ function formatPhone(value: string): string {
   return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7, 11)}`
 }
 
-export function Contact() {
+function ContactFormContent({ showPageHeading = false }: { showPageHeading?: boolean }) {
+  const searchParams = useSearchParams()
   const [status, setStatus] = useState<FormStatus>('idle')
   const [errorMessage, setErrorMessage] = useState('')
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    company: '',
-    projectType: '',
-    budget: '',
-    message: '',
-  })
+  const [formData, setFormData] = useState<FormData>(initialFormData)
+
+  const intent = searchParams.get('intent')
+  const serviceParam = searchParams.get('service')
+
+  const pageTitle =
+    intent === 'diagnostico' ? 'Agendar diagnóstico' : 'Solicitar orçamento'
 
   const currentPlaceholder = useMemo(() => {
     return messagePlaceholders[formData.projectType] || messagePlaceholders.default
@@ -102,33 +119,57 @@ export function Contact() {
 
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY)
+    let data = { ...initialFormData }
+
     if (saved) {
       try {
-        setFormData(JSON.parse(saved))
+        data = { ...data, ...JSON.parse(saved) }
       } catch {
         localStorage.removeItem(STORAGE_KEY)
       }
     }
-  }, [])
+
+    if (serviceParam && projectTypes.some((t) => t.value === serviceParam)) {
+      data.projectType = serviceParam
+    } else if (intent === 'diagnostico') {
+      data.projectType = 'manutencao-e-suporte'
+    }
+
+    setFormData(data)
+  }, [intent, serviceParam])
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
+
+    if (!formData.privacyConsent) {
+      setStatus('error')
+      setErrorMessage('É necessário aceitar o uso dos dados para continuar.')
+      return
+    }
+
     setStatus('loading')
     setErrorMessage('')
 
     try {
-      const selectedProjectType = projectTypes.find(t => t.value === formData.projectType)
-      const selectedBudget = budgetRanges.find(b => b.value === formData.budget)
+      const selectedProjectType = projectTypes.find((t) => t.value === formData.projectType)
+      const selectedObjective = objectiveOptions.find((o) => o.value === formData.objective)
+      const selectedTimeline = timelineOptions.find((t) => t.value === formData.timeline)
+      const selectedBudget = budgetRanges.find((b) => b.value === formData.budget)
 
       const response = await fetch('/api/send-email', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...formData,
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          company: formData.company,
           projectType: selectedProjectType?.label || formData.projectType,
+          objective: selectedObjective?.label || formData.objective,
+          timeline: selectedTimeline?.label || formData.timeline,
           budget: selectedBudget?.label || formData.budget,
+          message: formData.message,
+          intent: intent === 'diagnostico' ? 'Diagnóstico' : 'Orçamento',
         }),
       })
 
@@ -140,15 +181,7 @@ export function Contact() {
 
       setStatus('success')
       localStorage.removeItem(STORAGE_KEY)
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        company: '',
-        projectType: '',
-        budget: '',
-        message: '',
-      })
+      setFormData(initialFormData)
     } catch (error) {
       setStatus('error')
       setErrorMessage(error instanceof Error ? error.message : 'Erro ao enviar mensagem. Tente novamente.')
@@ -158,10 +191,11 @@ export function Contact() {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
-    const { name, value } = e.target
-    const newValue = name === 'phone' ? formatPhone(value) : value
+    const { name, value, type } = e.target
+    const newValue =
+      type === 'checkbox' ? (e.target as HTMLInputElement).checked : name === 'phone' ? formatPhone(value) : value
     const updatedData = { ...formData, [name]: newValue }
-    
+
     setFormData(updatedData)
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedData))
   }
@@ -179,14 +213,12 @@ export function Contact() {
             <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle className="w-8 h-8 text-primary" />
             </div>
-            <h3 className="text-2xl font-bold text-text mb-4">
-              Recebemos seu briefing!
-            </h3>
+            <h2 className="text-2xl font-bold text-text mb-4">Recebemos sua mensagem!</h2>
             <p className="text-text-muted mb-6">
-              Agora é com a gente. Você receberá uma proposta personalizada em até 24 horas úteis no e-mail informado.
+              Analisaremos sua demanda e retornaremos em até 24 horas úteis no e-mail informado.
             </p>
             <Button onClick={resetForm} variant="outline">
-              Enviar outro projeto
+              Enviar outra solicitação
             </Button>
           </div>
         </div>
@@ -195,23 +227,37 @@ export function Contact() {
   }
 
   return (
-    <section id="contato" className="py-20 md:py-32 bg-surface-dark" aria-labelledby="conte-sobre-seu-projeto-titulo">
+    <section id="contato" className="py-20 md:py-32 bg-surface-dark" aria-labelledby="contato-titulo">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionTitle 
-          subtitle="Responda algumas perguntas e receba uma proposta sob medida. Sem compromisso."
-        >
-          Conte sobre seu projeto
-        </SectionTitle>
+        {showPageHeading ? (
+          <h1 id="contato-titulo" className="text-3xl md:text-4xl lg:text-5xl font-bold text-text mb-4 text-center">
+            <span className="text-primary font-mono" aria-hidden="true">&lt;</span>
+            {pageTitle}
+            <span className="text-primary font-mono" aria-hidden="true">/&gt;</span>
+          </h1>
+        ) : (
+          <SectionTitle subtitle="Responda algumas perguntas e receba uma proposta sob medida. Sem compromisso.">
+            Conte sobre seu projeto
+          </SectionTitle>
+        )}
+
+        {showPageHeading && (
+          <p className="text-text-muted text-lg text-center max-w-2xl mx-auto mb-12">
+            Quanto mais contexto, melhor a proposta. Seus dados são usados apenas para retorno comercial.
+          </p>
+        )}
 
         <div className="grid lg:grid-cols-5 gap-12 lg:gap-16">
           <div className="lg:col-span-2 space-y-8">
             <div>
-              <h3 className="text-xl font-semibold text-text mb-4">
-                Não sabe exatamente o que precisa? Sem problema.
-              </h3>
+              <h2 className="text-xl font-semibold text-text mb-4">
+                {intent === 'diagnostico'
+                  ? 'Diagnóstico para projetos existentes'
+                  : 'Orçamento para projetos novos'}
+              </h2>
               <p className="text-text-muted leading-relaxed">
-                Este formulário foi feito para guiar você. Responda o que souber e nós cuidamos do resto. 
-                Quanto mais contexto, melhor a proposta.
+                Este formulário qualifica sua demanda: tipo de serviço, objetivo, prazo e investimento previsto.
+                Respondemos em até 24 horas úteis.
               </p>
             </div>
 
@@ -222,41 +268,31 @@ export function Contact() {
                 </div>
                 <div>
                   <p className="text-text-muted text-sm">E-mail direto</p>
-                  <a 
-                    href="mailto:contato@codigoprimordial.com" 
-                    className="text-text hover:text-primary transition-colors"
+                  <a
+                    href={`mailto:${SITE_EMAIL}`}
+                    className="text-text hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded"
                   >
-                    contato@codigoprimordial.com
+                    {SITE_EMAIL}
                   </a>
                 </div>
               </div>
 
               <div className="flex items-center gap-4 p-4 bg-surface rounded-xl">
                 <div className="p-3 bg-secondary/10 rounded-lg">
-                  <User className="w-5 h-5 text-secondary" />
+                  <Phone className="w-5 h-5 text-secondary" />
                 </div>
                 <div>
-                  <p className="text-text-muted text-sm">Atendimento humano</p>
-                  <p className="text-text">Resposta em até 24h úteis. Sem robôs.</p>
+                  <p className="text-text-muted text-sm">WhatsApp recomendado</p>
+                  <p className="text-text text-sm">Informe no formulário para retorno mais ágil.</p>
                 </div>
               </div>
-            </div>
-
-            <div className="p-6 bg-surface rounded-xl border border-surface-light">
-              <p className="text-text-muted text-sm italic">
-                "Consegui explicar minha ideia mesmo sem saber nada de tecnologia. 
-                Em uma semana já tinha a proposta e o cronograma."
-              </p>
-              <p className="text-primary text-sm mt-3 font-medium">
-                — Fundador de startup
-              </p>
             </div>
           </div>
 
           <div className="lg:col-span-3">
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6" noValidate>
               {status === 'error' && (
-                <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center gap-3">
+                <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center gap-3" role="alert">
                   <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
                   <p className="text-red-400 text-sm">{errorMessage}</p>
                 </div>
@@ -275,7 +311,7 @@ export function Contact() {
                     disabled={status === 'loading'}
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-surface border border-surface-light rounded-xl text-text placeholder:text-text-muted focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-3 bg-surface border border-surface-light rounded-xl text-text placeholder:text-text-muted focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all disabled:opacity-50"
                     placeholder="Como podemos te chamar?"
                   />
                 </div>
@@ -292,7 +328,7 @@ export function Contact() {
                     disabled={status === 'loading'}
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-surface border border-surface-light rounded-xl text-text placeholder:text-text-muted focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-3 bg-surface border border-surface-light rounded-xl text-text placeholder:text-text-muted focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all disabled:opacity-50"
                     placeholder="seu@email.com"
                   />
                 </div>
@@ -301,10 +337,7 @@ export function Contact() {
               <div className="grid sm:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="phone" className="block text-text text-sm font-medium mb-2">
-                    <span className="flex items-center gap-2">
-                      <Phone className="w-4 h-4" />
-                      WhatsApp (opcional)
-                    </span>
+                    WhatsApp (recomendado)
                   </label>
                   <input
                     type="tel"
@@ -314,8 +347,8 @@ export function Contact() {
                     value={formData.phone}
                     onChange={handleChange}
                     maxLength={16}
-                    className="w-full px-4 py-3 bg-surface border border-surface-light rounded-xl text-text placeholder:text-text-muted focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                    placeholder="(11) 99999-9999"
+                    className="w-full px-4 py-3 bg-surface border border-surface-light rounded-xl text-text placeholder:text-text-muted focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all disabled:opacity-50"
+                    placeholder="(71) 99999-9999"
                   />
                 </div>
 
@@ -330,7 +363,7 @@ export function Contact() {
                     disabled={status === 'loading'}
                     value={formData.company}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-surface border border-surface-light rounded-xl text-text placeholder:text-text-muted focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-3 bg-surface border border-surface-light rounded-xl text-text placeholder:text-text-muted focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all disabled:opacity-50"
                     placeholder="Ex: Minha Startup, Loja do João..."
                   />
                 </div>
@@ -339,7 +372,7 @@ export function Contact() {
               <div className="grid sm:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="projectType" className="block text-text text-sm font-medium mb-2">
-                    O que você precisa? *
+                    Tipo de serviço *
                   </label>
                   <select
                     id="projectType"
@@ -348,7 +381,7 @@ export function Contact() {
                     disabled={status === 'loading'}
                     value={formData.projectType}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-surface border border-surface-light rounded-xl text-text focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-3 bg-surface border border-surface-light rounded-xl text-text focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all appearance-none cursor-pointer disabled:opacity-50"
                   >
                     <option value="" disabled>Escolha a opção mais próxima</option>
                     {projectTypes.map((type) => (
@@ -358,8 +391,50 @@ export function Contact() {
                 </div>
 
                 <div>
+                  <label htmlFor="objective" className="block text-text text-sm font-medium mb-2">
+                    Objetivo principal *
+                  </label>
+                  <select
+                    id="objective"
+                    name="objective"
+                    required
+                    disabled={status === 'loading'}
+                    value={formData.objective}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 bg-surface border border-surface-light rounded-xl text-text focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all appearance-none cursor-pointer disabled:opacity-50"
+                  >
+                    <option value="" disabled>Qual o principal objetivo?</option>
+                    {objectiveOptions.map((option) => (
+                      <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-6">
+                <div>
+                  <label htmlFor="timeline" className="block text-text text-sm font-medium mb-2">
+                    Prazo desejado *
+                  </label>
+                  <select
+                    id="timeline"
+                    name="timeline"
+                    required
+                    disabled={status === 'loading'}
+                    value={formData.timeline}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 bg-surface border border-surface-light rounded-xl text-text focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all appearance-none cursor-pointer disabled:opacity-50"
+                  >
+                    <option value="" disabled>Quando precisa estar pronto?</option>
+                    {timelineOptions.map((option) => (
+                      <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
                   <label htmlFor="budget" className="block text-text text-sm font-medium mb-2">
-                    Investimento previsto *
+                    Faixa de investimento *
                   </label>
                   <select
                     id="budget"
@@ -368,7 +443,7 @@ export function Contact() {
                     disabled={status === 'loading'}
                     value={formData.budget}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-surface border border-surface-light rounded-xl text-text focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-3 bg-surface border border-surface-light rounded-xl text-text focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all appearance-none cursor-pointer disabled:opacity-50"
                   >
                     <option value="" disabled>Selecione uma faixa</option>
                     {budgetRanges.map((range) => (
@@ -390,20 +465,32 @@ export function Contact() {
                   rows={6}
                   value={formData.message}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-surface border border-surface-light rounded-xl text-text placeholder:text-text-muted focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full px-4 py-3 bg-surface border border-surface-light rounded-xl text-text placeholder:text-text-muted focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all resize-none disabled:opacity-50"
                   placeholder={currentPlaceholder}
                 />
-                <p className="text-text-muted text-xs mt-2">
-                  Não se preocupe em ser técnico. Escreva como se estivesse explicando para um amigo.
-                </p>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  id="privacyConsent"
+                  name="privacyConsent"
+                  required
+                  checked={formData.privacyConsent}
+                  onChange={handleChange}
+                  disabled={status === 'loading'}
+                  className="mt-1 h-4 w-4 rounded border-surface-light bg-surface text-primary focus:ring-primary/50"
+                />
+                <label htmlFor="privacyConsent" className="text-text-muted text-sm leading-relaxed">
+                  Autorizo o uso dos meus dados para retorno comercial da Código Primordial,
+                  conforme a LGPD. Seus dados não serão compartilhados com terceiros. *
+                </label>
               </div>
 
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <p className="text-text-muted text-sm">
-                  * Campos obrigatórios. Suas informações estão seguras.
-                </p>
-                <Button 
-                  type="submit" 
+                <p className="text-text-muted text-sm">* Campos obrigatórios</p>
+                <Button
+                  type="submit"
                   size="lg"
                   disabled={status === 'loading'}
                   className={status === 'loading' ? 'opacity-70 cursor-not-allowed' : ''}
@@ -415,7 +502,7 @@ export function Contact() {
                     </>
                   ) : (
                     <>
-                      Enviar e receber proposta
+                      {intent === 'diagnostico' ? 'Agendar diagnóstico' : 'Solicitar orçamento'}
                       <Send size={18} />
                     </>
                   )}
@@ -426,5 +513,17 @@ export function Contact() {
         </div>
       </div>
     </section>
+  )
+}
+
+interface ContactProps {
+  showPageHeading?: boolean
+}
+
+export function Contact({ showPageHeading = false }: ContactProps) {
+  return (
+    <Suspense fallback={<div className="py-32 bg-surface-dark" aria-hidden="true" />}>
+      <ContactFormContent showPageHeading={showPageHeading} />
+    </Suspense>
   )
 }
