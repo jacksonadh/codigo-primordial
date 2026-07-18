@@ -1,0 +1,6 @@
+# Legacy Vite/Vercel Functions (migrated to app/api/send-email/route.ts)
+api/
+
+# Build artifacts
+.next/
+out/
