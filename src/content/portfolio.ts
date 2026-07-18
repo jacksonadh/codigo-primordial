@@ -11,6 +11,17 @@ export interface PortfolioProject {
 
 export const portfolioProjects: PortfolioProject[] = [
   {
+    title: 'Meu Caminho financeiro',
+    client: 'Código Primordial',
+    description:
+      'Site e aplicativo para o gerenciamento de finanças pessoais. Com controle de receitas e despesas, gráficos de desempenho e planejamento financeiro.',
+    image: '/assets/portfolio/meucaminhofinanceiro.png',
+    tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'PWA'],
+    metrics: ['Interface intuitiva', 'SEO otimizado'],
+    liveUrl: 'https://meucaminhofinanceiro.com.br',
+    repoUrl: null,
+  },
+  {
     title: 'E-commerce de Artes',
     client: 'Blubi colab studio',
     description:
